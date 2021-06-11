@@ -1,4 +1,4 @@
-##MYSQL 설치 ( node1,node2,node3)
+# MYSQL 설치 ( node1,node2,node3)
 ```
 mkdir -p /maria/data /maria/log
 groupadd mysql
