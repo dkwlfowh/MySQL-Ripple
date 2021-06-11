@@ -1,0 +1,37 @@
+##MYSQL 설치 ( node1,node2,node3)
+```
+mkdir -p /maria/data /maria/log
+groupadd mysql
+useradd -g mysql mysql
+chown -R mysql.mysql /maria
+mv /root/mariadb-10.1.45-linux-x86_64 /maria/maria
+
+cd /maria/maria/scripts
+./mysql_install_db --user=mysql --basedir=/maria/maria
+
+
+[mysqld]
+basedir=/maria/maria
+datadir=/maria/data
+socket=/tmp/mysql.sock
+log-error=/maria/log/maria.err
+pid-file=/maria/log/mariadb.pid
+
+expire_logs_days=7
+server_id=1
+##-- 이걸 안해주면 간혹 Slave랑 Master의 Server_id가 동일하다는 ERROR가 발생한다.
+log_bin = mysql.bin  
+##-- binlog는 server내에서 발생되는 모든 변경내역이 기록되는 파일이다. PIT와 replication에서 필수 요소이다. 위치는 datadir에 생성된다. binlog의 활성화는 show variables like 'log_bin'을 사용하면된다.
+expire_logs_days=10   
+##10일뒤에 binlog는 지워짐
+relay_log=mysql-relay-bin
+log_slave_updates=1
+relay_log_purge=1  
+## --> master에서 받아온 relay_log를 적용하고나면 지운다.
+max_binlog_size = 512M
+
+
+[mysqld_safe]
+log-error=/maria/log/maria.err
+pid-file=/maria/log/mariadb.pid
+```
