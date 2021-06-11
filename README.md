@@ -6,3 +6,8 @@
 ![Mysql Ripple](https://user-images.githubusercontent.com/37256341/121684805-2bc68f80-cafa-11eb-9a38-a09275bef44e.jpg)
 
 
+![비교](https://user-images.githubusercontent.com/37256341/121685207-9b3c7f00-cafa-11eb-850d-55a400bd8295.jpg)
+1. 빨간색 = Master -> Slave 2
+2. 초록색 = Master -> Slave -> Slave2
+3. 파란색 = Master -> Ripple -> Slave2
+
