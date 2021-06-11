@@ -1,4 +1,4 @@
-# MYSQL 설치 ( node1,node2,node3)
+1. MYSQL 설치 ( node1,node2,node3)
 ```
 mkdir -p /maria/data /maria/log
 groupadd mysql
@@ -35,3 +35,256 @@ max_binlog_size = 512M
 log-error=/maria/log/maria.err
 pid-file=/maria/log/mariadb.pid
 ```
+
+
+
+
+2. RIPPLE RPM 다운로드 
+```
+https://lefred.be/content/ripple-binlog-server-for-mysql/
+
+
+[root@ripple ~]# yum -y install mysql-ripple-0.3-1.el7_.x86_64.rpm
+Loaded plugins: fastestmirror, langpacks
+Examining mysql-ripple-0.3-1.el7_.x86_64.rpm: mysql-ripple-0.3-1.el7.x86_64
+Marking mysql-ripple-0.3-1.el7_.x86_64.rpm to be installed
+Resolving Dependencies
+--> Running transaction check
+---> Package mysql-ripple.x86_64 0:0.3-1.el7 will be installed
+--> Finished Dependency Resolution
+base/7/x86_64                                                                                                | 3.6 kB  00:00:00     
+base/7/x86_64/group_gz                                                                                       | 153 kB  00:00:00     
+base/7/x86_64/primary_db                                                                                     | 6.1 MB  00:00:00     
+extras/7/x86_64                                                                                              | 2.9 kB  00:00:00     
+extras/7/x86_64/primary_db                                                                                   | 236 kB  00:00:00     
+updates/7/x86_64                                                                                             | 2.9 kB  00:00:00     
+updates/7/x86_64/primary_db                                                                                  | 8.0 MB  00:00:00     
+
+
+Dependencies Resolved
+
+
+====================================================================================================================================
+Package                     Arch                  Version                     Repository                                      Size
+====================================================================================================================================
+Installing:
+mysql-ripple                x86_64                0.3-1.el7                   /mysql-ripple-0.3-1.el7_.x86_64                 18 M
+
+
+Transaction Summary
+====================================================================================================================================
+Install  1 Package
+
+
+Total size: 18 M
+Installed size: 18 M
+Downloading packages:
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : mysql-ripple-0.3-1.el7.x86_64                                                                                    1/1
+  Verifying  : mysql-ripple-0.3-1.el7.x86_64                                                                                    1/1
+
+
+Installed:
+  mysql-ripple.x86_64 0:0.3-1.el7                                                                                                   
+
+
+Complete!
+
+
+3.  RIPPLE 활성화
+
+##Master Node Ripple User 생성
+MariaDB [(none)]> create user 'ripple'@'%' identified by 'ripple';
+Query OK, 0 rows affected (0.00 sec)
+MariaDB [(none)]> grant all on *.* to 'ripple'@'%';
+Query OK, 0 rows affected (0.00 sec)
+
+
+[root@ripple ~]# mkdir data log
+[root@ripple ~]# rippled -ripple_datadir=./data -ripple_master_address=192.168.100.91 -ripple_master_port=3306 -ripple_master_user=ripple -ripple_master_password=ripple -ripple_server_ports=15000 -ripple_server_address=192.168.100.94 -log_dir=/root/log
+
+WARNING: Logging before InitGoogleLogging() is written to STDERR
+I0602 17:09:57.168144 13660 rippled.cc:48] InitPlugins
+I0602 17:09:57.168241 13660 rippled.cc:60] Setup
+I0602 17:09:57.168277 13660 binlog.cc:307] Starting binlog recovery
+I0602 17:09:57.168443 13660 binlog.cc:350] Scanning binlog file: binlog.000000
+I0602 17:09:57.168967 13660 binlog.cc:417] Binlog recovery complete
+binlog file: binlog.000000, offset: 33305, gtid: 0-1-55
+I0602 17:09:57.168982 13660 rippled.cc:106] Recovered binlog
+I0602 17:09:57.169289 13660 mysql_server_port_tcpip.cc:150] Listen on host: 192.168.100.94, port: 15000
+I0602 17:09:57.169335 13660 rippled.cc:62] Start
+I0602 17:09:57.170241 13662 mysql_master_session.cc:181] Master session starting
+I0602 17:09:57.173379 13662 mysql_client_connection.cc:148] connected to host: 192.168.100.91, port: 3306
+I0602 17:09:57.175244 13662 mysql_master_session.cc:137] Connected to host: 192.168.100.91, port: 3306, server_id: 1, server_name:
+W0602 17:09:57.176194 13662 mysql_master_session.cc:197] master does not support semi sync
+I0602 17:09:57.176208 13662 mysql_master_session.cc:206] start replicating from '0-1-55'
+I0602 17:09:57.177047 13662 mysql_master_session.cc:229] Master session entering main loop
+I0602 17:09:57.177789 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:33364, gtid: 0-1-55
+I0602 17:09:57.177831 13662 binlog.cc:616] Skip writing event [ Gtid_list len = 25 ]
+I0602 17:09:57.177841 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:33364, gtid: 0-1-55
+I0602 17:09:57.177852 13662 binlog.cc:616] Skip writing event [ Binlog_checkpoint len = 35 ]
+I0602 17:09:57.177858 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:33364, gtid: 0-1-55
+I0602 17:09:57.177867 13662 binlog.cc:616] Skip writing event [ Gtid_list len = 39 ]
+I0602 17:09:57.177872 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:33364, gtid: 0-1-55
+I0602 17:09:57.177915 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:33836, gtid: 0-1-56
+I0602 17:09:57.177951 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:34241, gtid: 0-1-57
+I0602 17:09:57.177973 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:34448, gtid: 0-1-58
+I0602 17:09:57.177983 13662 binlog.cc:616] Skip writing event [ Stop len = 19 ]
+I0602 17:09:57.177989 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:34448, gtid: 0-1-58
+I0602 17:09:57.178002 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:34507, gtid: 0-1-58
+I0602 17:09:57.178033 13662 binlog.cc:616] Skip writing event [ Gtid_list len = 39 ]
+I0602 17:09:57.178040 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:34507, gtid: 0-1-58
+I0602 17:09:57.178048 13662 binlog.cc:616] Skip writing event [ Binlog_checkpoint len = 35 ]
+I0602 17:09:57.178054 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:34507, gtid: 0-1-58
+I0602 17:09:57.178063 13662 binlog.cc:616] Skip writing event [ Stop len = 19 ]
+I0602 17:09:57.178068 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:34507, gtid: 0-1-58
+I0602 17:09:57.178082 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:34566, gtid: 0-1-58
+I0602 17:09:57.178112 13662 binlog.cc:616] Skip writing event [ Gtid_list len = 39 ]
+I0602 17:09:57.178117 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:34566, gtid: 0-1-58
+I0602 17:09:57.178126 13662 binlog.cc:616] Skip writing event [ Binlog_checkpoint len = 35 ]
+I0602 17:09:57.178133 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:34566, gtid: 0-1-58
+I0602 17:09:57.178153 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:34751, gtid: 0-1-59
+I0602 17:09:57.178174 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:34937, gtid: 0-1-60
+I0602 17:09:57.178196 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:35461, gtid: 0-1-61
+I0602 17:09:57.178217 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:35940, gtid: 0-1-62
+I0602 17:09:57.178227 13662 binlog.cc:616] Skip writing event [ Stop len = 19 ]
+I0602 17:09:57.178233 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:35940, gtid: 0-1-62
+I0602 17:09:57.178246 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:35999, gtid: 0-1-62
+I0602 17:09:57.178275 13662 binlog.cc:616] Skip writing event [ Gtid_list len = 39 ]
+I0602 17:09:57.178282 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:35999, gtid: 0-1-62
+I0602 17:09:57.178290 13662 binlog.cc:616] Skip writing event [ Binlog_checkpoint len = 35 ]
+I0602 17:09:57.178297 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:35999, gtid: 0-1-62
+I0602 17:09:57.178316 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:36183, gtid: 0-1-63
+I0602 17:09:57.178337 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:36368, gtid: 0-1-64
+I0602 17:09:57.178347 13662 binlog.cc:616] Skip writing event [ Stop len = 19 ]
+I0602 17:09:57.178354 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:36368, gtid: 0-1-64
+I0602 17:09:57.178366 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:36427, gtid: 0-1-64
+I0602 17:09:57.178395 13662 binlog.cc:616] Skip writing event [ Gtid_list len = 39 ]
+I0602 17:09:57.178400 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:36427, gtid: 0-1-64
+I0602 17:09:57.178409 13662 binlog.cc:616] Skip writing event [ Binlog_checkpoint len = 35 ]
+I0602 17:09:57.178416 13662 binlog.cc:626] Update binlog position to end_pos: binlog.000000:36427, gtid: 0-1-64
+(생략)
+I0602 17:11:11.017549 13719 mysql_slave_session.cc:75] Slave session starting
+W0602 17:11:11.018047 13719 mysql_protocol.cc:201] Authenticating user: ripple
+W0602 17:11:11.018064 13719 mysql_protocol.cc:248] No ripple_server_password_hash set, using noop authentication
+I0602 17:11:11.021102 13719 mysql_slave_session.cc:610] Slave server_id: 3 server_name:  request to start from: '0-1-64'
+I0602 17:11:11.022109 13719 binlog_reader.cc:214] Seek completed, position: [  group: 0 completed/started gtid: 0-1-64/0-1-64 group/end position: binlog.000000:36368/binlog.000000:36368 master/next position: mysql.000004:36368/mysql.000004:36368 ]
+I0602 17:11:11.022158 13719 mysql_protocol.cc:482] Send event, type: Rotate, timestamp: 0, length: 44, nextpos: 0
+I0602 17:11:11.022186 13719 mysql_protocol.cc:482] Send event, type: Format_desc, timestamp: 0, length: 245, nextpos: 0
+I0602 17:11:40.294128 13720 mysql_slave_session.cc:75] Slave session starting
+W0602 17:11:40.294478 13720 mysql_protocol.cc:201] Authenticating user: ripple
+W0602 17:11:40.294514 13720 mysql_protocol.cc:248] No ripple_server_password_hash set, using noop authentication
+I0602 17:11:40.297245 13720 mysql_slave_session.cc:610] Slave server_id: 2 server_name:  request to start from: '0-2-62'
+E0602 17:11:40.298177 13720 binlog_reader.cc:53] Error: connecting slave requested to start from GTID 0-2-62, which is not in the master's binlog. Since the master's binlog contains GTIDs with higher sequence numbers, it probably means that the slave has diverged due to executing extra erroneous transactions, found (0-1-62)
+E0602 17:11:40.298194 13720 mysql_slave_session.cc:619] Failed to open binlog for binlog dump: Error: connecting slave requested to start from GTID 0-2-62, which is not in the master's binlog. Since the master's binlog contains GTIDs with higher sequence numbers, it probably means that the slave has diverged due to executing extra erroneous transactions, found (0-1-62)
+I0602 17:11:40.298221 13720 mysql_slave_session.cc:125] Slave session stopping
+I0602 17:15:14.965123 13895 mysql_slave_session.cc:75] Slave session starting
+W0602 17:15:14.965514 13895 mysql_protocol.cc:201] Authenticating user: ripple
+W0602 17:15:14.965530 13895 mysql_protocol.cc:248] No ripple_server_password_hash set, using noop authentication
+I0602 17:15:14.968632 13895 mysql_slave_session.cc:610] Slave server_id: 2 server_name:  request to start from: '0-1-64'
+I0602 17:15:14.969564 13895 binlog_reader.cc:214] Seek completed, position: [  group: 0 completed/started gtid: 0-1-64/0-1-64 group/end position: binlog.000000:36368/binlog.000000:36368 master/next position: mysql.000004:36368/mysql.000004:36368 ]
+I0602 17:15:14.969607 13895 mysql_protocol.cc:482] Send event, type: Rotate, timestamp: 0, length: 44, nextpos: 0
+I0602 17:15:14.969641 13895 mysql_protocol.cc:482] Send event, type: Format_desc, timestamp: 0, length: 245, nextpos: 0
+
+
+4.  Slave  Ripple과 동기화
+
+[root@mariadb002 network-scripts]# mysql -uroot -p
+Enter password:
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 8
+Server version: 10.1.45-MariaDB MariaDB Server
+
+
+Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+
+##SLAVE
+MariaDB [(none)]>  SELECT @@gtid_current_pos;
++--------------------+
+| @@gtid_current_pos |
++--------------------+
+| 0-2-62             |
++--------------------+
+1 row in set (0.00 sec)
+
+
+MariaDB [(none)]> SET GLOBAL gtid_slave_pos = "0-1-64";  --> Master의 gtid랑 맞춰야된다.
+Query OK, 0 rows affected (0.01 sec)
+
+
+MariaDB [(none)]>  SELECT @@gtid_current_pos;
++--------------------+
+| @@gtid_current_pos |
++--------------------+
+| 0-1-64             |
++--------------------+
+1 row in set (0.00 sec)
+
+
+##SALVE
+MariaDB [(none)]> CHANGE MASTER TO master_host='192.168.100.94', master_port=15000, master_user='ripple',master_use_gtid=current_pos;
+Query OK, 0 rows affected (0.02 sec)
+
+
+MariaDB [(none)]>
+MariaDB [(none)]> start slave;
+Query OK, 0 rows affected (0.01 sec)
+
+
+MariaDB [(none)]> show slave status\G
+*************************** 1. row ***************************
+               Slave_IO_State: Waiting for master to send event
+                  Master_Host: 192.168.100.94
+                  Master_User: ripple
+                  Master_Port: 15000
+                Connect_Retry: 60
+              Master_Log_File: binlog.000000
+          Read_Master_Log_Pos: 36368
+               Relay_Log_File: mysql-relay-bin.000002
+                Relay_Log_Pos: 534
+        Relay_Master_Log_File: binlog.000000
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+              Replicate_Do_DB:
+          Replicate_Ignore_DB:
+           Replicate_Do_Table:
+       Replicate_Ignore_Table:
+      Replicate_Wild_Do_Table:
+  Replicate_Wild_Ignore_Table:
+                   Last_Errno: 0
+                   Last_Error:
+                 Skip_Counter: 0
+          Exec_Master_Log_Pos: 36368
+              Relay_Log_Space: 832
+              Until_Condition: None
+               Until_Log_File:
+                Until_Log_Pos: 0
+           Master_SSL_Allowed: No
+           Master_SSL_CA_File:
+           Master_SSL_CA_Path:
+              Master_SSL_Cert:
+            Master_SSL_Cipher:
+               Master_SSL_Key:
+        Seconds_Behind_Master: 0
+Master_SSL_Verify_Server_Cert: No
+                Last_IO_Errno: 0
+                Last_IO_Error:
+               Last_SQL_Errno: 0
+               Last_SQL_Error:
+  Replicate_Ignore_Server_Ids:
+             Master_Server_Id: 112211
+               Master_SSL_Crl:
+           Master_SSL_Crlpath:
+                   Using_Gtid: Current_Pos
+                  Gtid_IO_Pos: 0-1-64
+      Replicate_Do_Domain_Ids:
+  Replicate_Ignore_Domain_Ids:
+                Parallel_Mode: conservative
+1 row in set (0.00 sec)
