@@ -3,4 +3,4 @@
 
 2. Ripple은 GTID (각각 MariaDB 및 MySQL 버전)를 사용하여 MariaDB 및 MySQL과의 복제를 지원합니다. 파일 이름 및 위치를 사용한 복제는 지원되지 않습니다. Ripple은 MariaDB 10.0 및 MySQL 5.6 및 5.7에서 테스트되었지만 이후 버전에서도 작동 할 것입니다.
 
-https://user-images.githubusercontent.com/37256341/121684805-2bc68f80-cafa-11eb-9a38-a09275bef44e.jpg
+https://github.com/dkwlfowh/MySQL-Ripple/issues/1#issue-918673901
